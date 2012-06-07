@@ -42,7 +42,7 @@ function Dispatcher() {
 
 	this.trigger = function(events) {
 		
-		var event, args, nss, cbs, fire, ns, i, found, evs;
+		var event, args, nss, cbs, fire, ns, i, found, evs, status;
 		evs = events.split(/\s+/);
 		args = arguments;
 		fire = []; found = {};
@@ -59,8 +59,13 @@ function Dispatcher() {
 				}
 				cbs = cbs.c[ns] || null;
 			}
+			found = 0;
 			for (i = fire.length - 1; i>= 0; --i) {
-				fire[i].cb.apply(fire[i].ct || this, args);
+				if (found && fire[i].ev.length != found)
+					break;
+				if (fire[i].cb.apply(fire[i].ct || this, args) === false) {
+					found = fire[i].ev.length;
+				}
 			}
 		}
 	}

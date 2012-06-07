@@ -106,5 +106,25 @@ describe("Mediator", function() {
 			expect(spy).not.toHaveBeenCalled();
 		})
 		
+		it("stops handler calls if handler returns false", function() {
+			var obj = {};
+			var spyX = jasmine.createSpy("x callback");
+			var spyXY1 = jasmine.createSpy("x:y callback1").andReturn(false);
+			var spyXY2 = jasmine.createSpy("x:y callback2");
+			var spyXYZ = jasmine.createSpy("x:y:z callback");
+
+			d.on("x", spyX);
+			d.on("x:y", spyXY1);
+			d.on("x:y", spyXY2);
+			d.on("x:y:z", spyXYZ);
+			d.trigger("x:y:z");
+			
+			expect(spyX).not.toHaveBeenCalled();
+			expect(spyXY1).toHaveBeenCalled();
+			expect(spyXY2).toHaveBeenCalled();
+			expect(spyXYZ).toHaveBeenCalled();
+			
+		})
+		
 	});
 });

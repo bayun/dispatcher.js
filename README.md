@@ -45,3 +45,14 @@ Events can be namespaced using ":" like "foo:bar:baz". Then you can listen on fi
 * Unsubscribe all handlers for given namespace:
 
 		d.off("foo:bar")
+
+* Stop propagation of event to higher namespace handlers (useful for overriding default handlers):
+
+		// in this example event propagation will be stopped on "foo:bar" level, so handler for "foo" will not be called
+		// but all others will be
+		function stopper() {return false;}
+		d.on("foo", handler1);
+		d.on("foo:bar", handler2);
+		d.on("foo:bar", stopper);
+		d.on("foo:bar:baz", handler3);
+		d.trigger("foo:bar:baz");
