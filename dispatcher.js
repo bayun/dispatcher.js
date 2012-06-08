@@ -24,17 +24,21 @@ function Dispatcher() {
 			cbs = this._cbs;
 			while((ns = nss.shift()) && (cbs = cbs.c[ns])) {
 			}
-			head = cbs.n;
-			while(head) {
-				if ((!callback || head.cb === callback) && head.ct === context) {
-					if (!prev) {
-						head = cbs.n = head.n;
+			if (!callback) {
+				cbs.n = false;
+			} else {
+				head = cbs.n;
+				while(head) {
+					if (head.cb === callback && head.ct === context) {
+						if (!prev) {
+							head = cbs.n = head.n;
+						}
+						else
+							head = prev.n = head.n;
+					} else {
+						prev = head;
+						head = head.n;
 					}
-					else
-						head = prev.n = head.n;
-				} else {
-					prev = head;
-					head = head.n;
 				}
 			}
 		}
