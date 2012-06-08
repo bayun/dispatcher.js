@@ -30,11 +30,10 @@ function Dispatcher() {
 				head = cbs.n;
 				while(head) {
 					if (head.cb === callback && head.ct === context) {
-						if (!prev) {
-							head = cbs.n = head.n;
-						}
-						else
+						if (prev)
 							head = prev.n = head.n;
+						else
+							head = cbs.n = head.n;
 					} else {
 						prev = head;
 						head = head.n;
@@ -60,7 +59,7 @@ function Dispatcher() {
 				fire.push(0);
 			}
 			stop = 0;
-			for (ind = fire.length - 1; ind >= 0; --ind) {
+			for (ind = fire.length - 2; ind > -1; --ind) {
 				cb = fire[ind];
 				if (!cb) {
 					if (stop)
