@@ -9,7 +9,9 @@ function Dispatcher() {
 			nss = event.split(':');
 			cbs = this._cbs;
 			while(ns = nss.shift()) {
-				cbs = cbs.c[ns] = cbs.c[ns] || {c:{}};
+				if (!cbs.c[ns])
+					cbs.c[ns] = {c:{}};
+				cbs = cbs.c[ns];
 			}
 			cbs.n = { cb: callback, ct: context, n: cbs.n };
 		}
