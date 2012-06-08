@@ -1,6 +1,5 @@
 function Dispatcher() {
 	this._cbs = {c:{}};
-	this.c = 1;
 
 	this.on = function(events, callback, context) {
 		if (!callback) throw "bad callback";
@@ -12,10 +11,8 @@ function Dispatcher() {
 			while(ns = nss.shift()) {
 				cbs = cbs.c[ns] = cbs.c[ns] || {c:{}};
 			}
-			node = { cb: callback, ct: context, ev: event + ":", id: this.c, n: cbs.n };
-			cbs.n = node;
+			cbs.n = { cb: callback, ct: context, ev: event + ":", id: this.c, n: cbs.n };
 		}
-		++this.c;
 		return this;
 	}
 
@@ -50,32 +47,6 @@ function Dispatcher() {
 		evs = events.split(/\s+/);
 		args = ["", a,b,c,d,e,f,g,h,i,j,k,l,m,n,o];
 		fire = [];
-		while (args[0] = event = evs.shift()) {
-			nss = event.split(':');
-			cbs = this._cbs;
-			while((ns = nss.shift()) && (cbs = cbs.c[ns])) {
-				for (cb = cbs.n; cb; cb = cb.n) {
-					fire.push(cb);
-				}
-			}
-			found = 0;
-			for (ind = fire.length - 1; ind >= 0; --ind) {
-				cb = fire[ind];
-				if (found && cb.ev.length != found)
-					break;
-				if (cb.cb.apply(cb.ct || this, args) === false) {
-					found = cb.ev.length;
-				}
-			}
-		}
-		return this;
-	}
-	
-	this.trigger2 = function(events) {
-		var event, ev1, args, nss, cbs, fire, cb, ns, ind, found, evs;
-		evs = events.split(/\s+/);
-		args = arguments;
-		fire = []; found = {};
 		while (args[0] = event = evs.shift()) {
 			nss = event.split(':');
 			cbs = this._cbs;
