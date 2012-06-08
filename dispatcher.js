@@ -26,7 +26,7 @@ function Dispatcher() {
 			}
 			head = cbs.n;
 			while(head) {
-				if ((!callback || head.cb == callback) && head.ct == context) {
+				if ((!callback || head.cb === callback) && head.ct === context) {
 					if (!prev) {
 						head = cbs.n = head.n;
 					}
@@ -57,7 +57,7 @@ function Dispatcher() {
 			found = 0;
 			for (ind = fire.length - 1; ind >= 0; --ind) {
 				cb = fire[ind];
-				if (found && cb.ev.length != found)
+				if (found && cb.ev.length !== found)
 					break;
 				if (cb.cb.apply(cb.ct || this, args) === false) {
 					found = cb.ev.length;
