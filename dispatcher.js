@@ -11,7 +11,7 @@ function Dispatcher() {
 			while(ns = nss.shift()) {
 				cbs = cbs.c[ns] = cbs.c[ns] || {c:{}};
 			}
-			cbs.n = { cb: callback, ct: context, ev: event, n: cbs.n };
+			cbs.n = { cb: callback, ct: context, n: cbs.n };
 		}
 		return this;
 	}
@@ -53,14 +53,18 @@ function Dispatcher() {
 				for (cb = cbs.n; cb; cb = cb.n) {
 					fire.push(cb);
 				}
+				fire.push(0);
 			}
 			found = 0;
 			for (ind = fire.length - 1; ind >= 0; --ind) {
 				cb = fire[ind];
-				if (found && cb.ev.length !== found)
-					break;
-				if (cb.cb.apply(cb.ct || this, args) === false) {
-					found = cb.ev.length;
+				if (!cb) {
+					if (found)
+						break;
+				} else {
+					if (cb.cb.apply(cb.ct || this, args) === false) {
+						found = 1;
+					}
 				}
 			}
 		}
