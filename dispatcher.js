@@ -4,7 +4,7 @@ function Dispatcher() {
 	this.on = function(events, callback, context) {
 		if (!callback) throw "bad callback";
 		events = events.split(/\s+/);
-		var event, nss, ns, node, cbs;
+		var event, nss, ns, cbs;
 		while (event = events.shift()) {
 			nss = event.split(':');
 			cbs = this._cbs;
@@ -17,10 +17,10 @@ function Dispatcher() {
 	}
 
 	this.off = function (events, callback, context) {
-		var nss, cbs = true, alive, ns, cb, ev, head, prev;
+		var nss, ns, cbs, cb, head, prev;
 		events = events.split(/\s+/);
-		while (cbs && (ev = events.shift())) {
-			nss = ev.split(':');
+		while (nss = events.shift()) {
+			nss = nss.split(':');
 			cbs = this._cbs;
 			while((ns = nss.shift()) && (cbs = cbs.c[ns])) {
 			}
@@ -42,12 +42,12 @@ function Dispatcher() {
 	}
 
 	this.trigger = function(events, a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) {
-		var event, ev1, args, nss, cbs, fire, cb, ns, ind, found, evs;
+		var args, nss, cbs, fire, cb, ns, ind, found, evs;
 		evs = events.split(/\s+/);
 		args = ["", a,b,c,d,e,f,g,h,i,j,k,l,m,n,o];
 		fire = [];
-		while (args[0] = event = evs.shift()) {
-			nss = event.split(':');
+		while (args[0] = nss = evs.shift()) {
+			nss = nss.split(':');
 			cbs = this._cbs;
 			while((ns = nss.shift()) && (cbs = cbs.c[ns])) {
 				for (cb = cbs.n; cb; cb = cb.n) {
