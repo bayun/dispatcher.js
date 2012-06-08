@@ -7,12 +7,13 @@ function Dispatcher() {
 		events = events.split(/\s+/);
 		var event, nss, ns, node, cbs;
 		while (event = events.shift()) {
-			node = { cb: callback, ct: context, ev: event + ":", id: this.c };
+			
 			nss = event.split(':');
 			cbs = this._cbs;
 			while (ns = nss.shift()) {
-				cbs.cbs.push(node);
-				cbs = cbs.c[ns] = cbs.c[ns] || {cbs:[], c: {}};
+				node = { cb: callback, ct: context, ev: event + ":", id: this.c, n: cbs.n };
+				cbs.n = node;
+				cbs = cbs.c[ns] = cbs.c[ns] || {cbs:[], c:{}};
 			}
 		}
 		++this.c;
@@ -20,19 +21,26 @@ function Dispatcher() {
 	}
 
 	this.off = function (events, callback, context) {
-		var nss, cbs = true, alive, ns, cb, ev;
+		var nss, cbs = true, alive, ns, cb, ev, head, prev;
 		events = events.split(/\s+/);
 		while (cbs && (ev = events.shift())) {
 			nss = ev.split(':');
 			ev += ':';
 			cbs = this._cbs;
 			while (ns = nss.shift()) {
-				alive = [];
-				while(cb = cbs.cbs.shift()) {
-					if ((callback && cb.cb != callback) || cb.ev != ev || cb.ct != context)
-						alive.push(cb);
+				head = cbs.n;
+				while(head) {
+					if ((!callback || head.cb == callback) && head.ev == ev && head.ct == context) {
+						if (!prev) {
+							head = cbs.n = head.n;
+						}
+						else
+							head = prev.n = head.n;
+					} else {
+						prev = head;
+						head = head.n;
+					}
 				}
-				cbs.cbs = alive;
 				nss.length ? delete cbs.c[ns] : cbs = cbs.c[ns];
 			}
 		}
@@ -41,7 +49,7 @@ function Dispatcher() {
 
 	this.trigger = function(events, a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) {
 		
-		var event, ev1, args, nss, cbs, fire, cb, ns, i, found, evs;
+		var event, ev1, args, nss, cbs, fire, cb, ns, ind, found, evs;
 		evs = events.split(/\s+/);
 //		args = arguments;
 //		args = Array.prototype.slice(arguments, 1);
@@ -52,8 +60,7 @@ function Dispatcher() {
 			event += ":";
 			cbs = this._cbs;
 			while (cbs && (ns = nss.shift())) {
-				for (i = 0; i < cbs.cbs.length; ++i) {
-					cb = cbs.cbs[i];
+				for (cb = cbs.n; cb; cb = cb.n) {
 					if (!found[cb.id] && event.lastIndexOf(cb.ev, 0) === 0) {
 						fire.push(cb);
 						found[cb.id] = 1;
@@ -62,8 +69,8 @@ function Dispatcher() {
 				cbs = cbs.c[ns]
 			}
 			found = 0;
-			for (i = fire.length - 1; i>= 0; --i) {
-				cb = fire[i];
+			for (ind = 0; ind < fire.length; ++ind) {
+				cb = fire[ind];
 				if (found && cb.ev.length != found)
 					break;
 				if (cb.cb.apply(cb.ct || this, args) === false) {
