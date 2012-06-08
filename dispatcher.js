@@ -1,5 +1,5 @@
 function Dispatcher() {
-	this._cbs = {cbs:[], c:{}};
+	this._cbs = {c:{}};
 	this.c = 1;
 
 	this.on = function(events, callback, context) {
@@ -7,11 +7,10 @@ function Dispatcher() {
 		events = events.split(/\s+/);
 		var event, nss, ns, node, cbs;
 		while (event = events.shift()) {
-			
 			nss = event.split(':');
 			cbs = this._cbs;
 			while(ns = nss.shift()) {
-				cbs = cbs.c[ns] = cbs.c[ns] || {cbs:[], c:{}};
+				cbs = cbs.c[ns] = cbs.c[ns] || {c:{}};
 			}
 			node = { cb: callback, ct: context, ev: event + ":", id: this.c, n: cbs.n };
 			cbs.n = node;
@@ -27,8 +26,7 @@ function Dispatcher() {
 			nss = ev.split(':');
 			ev += ':';
 			cbs = this._cbs;
-			while(ns = nss.shift()) {
-				cbs = cbs.c[ns] = cbs.c[ns] || {cbs:[], c:{}};
+			while((ns = nss.shift()) && (cbs = cbs.c[ns])) {
 			}
 			head = cbs.n;
 				while(head) {
@@ -48,17 +46,40 @@ function Dispatcher() {
 	}
 
 	this.trigger = function(events, a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) {
-		
 		var event, ev1, args, nss, cbs, fire, cb, ns, ind, found, evs;
 		evs = events.split(/\s+/);
-//		args = arguments;
-		args = ['',a,b,c,d,e,f,g,h,i,j,k,l,m,n,o];
+		args = ["", a,b,c,d,e,f,g,h,i,j,k,l,m,n,o];
+		fire = [];
+		while (args[0] = event = evs.shift()) {
+			nss = event.split(':');
+			cbs = this._cbs;
+			while((ns = nss.shift()) && (cbs = cbs.c[ns])) {
+				for (cb = cbs.n; cb; cb = cb.n) {
+					fire.push(cb);
+				}
+			}
+			found = 0;
+			for (ind = fire.length - 1; ind >= 0; --ind) {
+				cb = fire[ind];
+				if (found && cb.ev.length != found)
+					break;
+				if (cb.cb.apply(cb.ct || this, args) === false) {
+					found = cb.ev.length;
+				}
+			}
+		}
+		return this;
+	}
+	
+	this.trigger2 = function(events) {
+		var event, ev1, args, nss, cbs, fire, cb, ns, ind, found, evs;
+		evs = events.split(/\s+/);
+		args = arguments;
 		fire = []; found = {};
 		while (args[0] = event = evs.shift()) {
 			nss = event.split(':');
-			event += ":";
 			cbs = this._cbs;
-			while(ns = nss.shift(), cbs = cbs.c[ns]) {
+			while((ns = nss.shift()) && (cbs = cbs.c[ns])) {
 				for (cb = cbs.n; cb; cb = cb.n) {
 					fire.push(cb);
 				}
