@@ -42,7 +42,7 @@ function Dispatcher() {
 	}
 
 	this.trigger = function(events, a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) {
-		var args, nss, cbs, fire, cb, ns, ind, found, evs;
+		var args, nss, cbs, fire, cb, ns, ind, stop, evs;
 		evs = events.split(/\s+/);
 		args = ["", a,b,c,d,e,f,g,h,i,j,k,l,m,n,o];
 		fire = [];
@@ -55,16 +55,15 @@ function Dispatcher() {
 				}
 				fire.push(0);
 			}
-			found = 0;
+			stop = 0;
 			for (ind = fire.length - 1; ind >= 0; --ind) {
 				cb = fire[ind];
 				if (!cb) {
-					if (found)
+					if (stop)
 						break;
 				} else {
-					if (cb.cb.apply(cb.ct || this, args) === false) {
-						found = 1;
-					}
+					if (cb.cb.apply(cb.ct || this, args) === false)
+						stop = 1;
 				}
 			}
 		}
