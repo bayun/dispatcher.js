@@ -1,7 +1,7 @@
 dispatcher.js
 =============
 
-Version 0.5.0
+Version 0.6.0
 
 Extremally small implementation of event dispatcher with namespace support.
 
