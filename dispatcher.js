@@ -1,5 +1,5 @@
 function Dispatcher() {
-	this._cbs = {c:{}};
+	this._cbs = {c:{}, cbs:[]};
 
 	this.on = function(events, callback, context) {
 		if (!callback) throw "bad callback";
@@ -10,10 +10,10 @@ function Dispatcher() {
 			cbs = this._cbs;
 			while(ns = nss.shift()) {
 				if (!cbs.c[ns])
-					cbs.c[ns] = {c:{}};
+					cbs.c[ns] = {c:{}, cbs:[]};
 				cbs = cbs.c[ns];
 			}
-			cbs.n = { cb: callback, ct: context, n: cbs.n };
+			cbs.cbs.push({ cb: callback, ct: context});
 		}
 		return this;
 	}
@@ -27,17 +27,15 @@ function Dispatcher() {
 			while((ns = nss.shift()) && (cbs = cbs.c[ns])) {
 			}
 			if (!callback) {
-				cbs.n = false;
+				cbs.cbs = [];
 			} else {
-				head = cbs.n;
-				while(head) {
-					if (head.cb === callback && head.ct === context) {
-						head = cbs.n = head.n;
-					} else {
-						cbs = head;
-						head = head.n;
+				head = [];
+				for(var i = cbs.cbs.length - 1; i > -1; --i) {
+					if (cbs.cbs[i].cb !== callback || cbs.cbs[i].ct !== context) {
+						head.push(cbs.cbs[i]);
 					}
 				}
+				cbs.cbs = head;
 			}
 		}
 		return this;
@@ -52,9 +50,7 @@ function Dispatcher() {
 			nss = nss.split(':');
 			cbs = this._cbs;
 			while((ns = nss.shift()) && (cbs = cbs.c[ns])) {
-				for (cb = cbs.n; cb; cb = cb.n) {
-					fire.push(cb);
-				}
+				fire = fire.concat(cbs.cbs);
 				fire.push(0);
 			}
 			stop = 0;
