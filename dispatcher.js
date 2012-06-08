@@ -32,12 +32,9 @@ function Dispatcher() {
 				head = cbs.n;
 				while(head) {
 					if (head.cb === callback && head.ct === context) {
-						if (prev)
-							head = prev.n = head.n;
-						else
-							head = cbs.n = head.n;
+						head = cbs.n = head.n;
 					} else {
-						prev = head;
+						cbs = head;
 						head = head.n;
 					}
 				}

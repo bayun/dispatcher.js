@@ -20,14 +20,22 @@ describe("Mediator", function() {
 		it("unsubscribes handler for simple event", function() {
 			var spy = jasmine.createSpy("test callback");
 			var spy2 = jasmine.createSpy("test callback2");
+			var spy3 = jasmine.createSpy("test callback3");
+			var spy4 = jasmine.createSpy("test callback4");
 			d.on("x", spy);
 			d.on("y", spy2);
+			d.on("y", spy3);
+			d.on("y", spy4);
 			d.off("x", spy);
+			d.off("y", spy2);
+			d.off("y", spy4);
 			d.trigger("x");
 			d.trigger("y");
 
 			expect(spy).not.toHaveBeenCalled();
-			expect(spy2).toHaveBeenCalled();
+			expect(spy2).not.toHaveBeenCalled();
+			expect(spy4).not.toHaveBeenCalled();
+			expect(spy3).toHaveBeenCalled();
 		})
 		
 		it("passes arguments to callback", function(){
