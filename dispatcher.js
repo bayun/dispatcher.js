@@ -16,6 +16,7 @@ function Dispatcher() {
 			}
 		}
 		++this.c;
+		return this;
 	}
 
 	this.off = function (events, callback, context) {
@@ -35,13 +36,16 @@ function Dispatcher() {
 				nss.length ? delete cbs.c[ns] : cbs = cbs.c[ns];
 			}
 		}
+		return this;
 	}
 
-	this.trigger = function(events) {
+	this.trigger = function(events, a,b,c,d,e,f,g,h,i,j,k,l,m,n,o) {
 		
-		var event, args, nss, cbs, fire, cb, ns, i, found, evs;
+		var event, ev1, args, nss, cbs, fire, cb, ns, i, found, evs;
 		evs = events.split(/\s+/);
-		args = arguments;
+//		args = arguments;
+//		args = Array.prototype.slice(arguments, 1);
+		args = ['',a,b,c,d,e,f,g,h,i,j,k,l,m,n,o];
 		fire = []; found = {};
 		while (args[0] = event = evs.shift()) {
 			nss = event.split(':');
@@ -67,5 +71,6 @@ function Dispatcher() {
 				}
 			}
 		}
+		return this;
 	}
 }
