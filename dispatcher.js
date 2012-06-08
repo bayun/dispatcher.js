@@ -27,7 +27,7 @@ function Dispatcher() {
 			}
 			head = cbs.n;
 				while(head) {
-					if ((!callback || head.cb == callback) && head.ev == ev && head.ct == context) {
+					if ((!callback || head.cb == callback) && head.ct == context) {
 						if (!prev) {
 							head = cbs.n = head.n;
 						}
