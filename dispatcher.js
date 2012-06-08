@@ -11,7 +11,7 @@ function Dispatcher() {
 			while(ns = nss.shift()) {
 				cbs = cbs.c[ns] = cbs.c[ns] || {c:{}};
 			}
-			cbs.n = { cb: callback, ct: context, ev: event + ":", id: this.c, n: cbs.n };
+			cbs.n = { cb: callback, ct: context, ev: event, n: cbs.n };
 		}
 		return this;
 	}
@@ -21,23 +21,22 @@ function Dispatcher() {
 		events = events.split(/\s+/);
 		while (cbs && (ev = events.shift())) {
 			nss = ev.split(':');
-			ev += ':';
 			cbs = this._cbs;
 			while((ns = nss.shift()) && (cbs = cbs.c[ns])) {
 			}
 			head = cbs.n;
-				while(head) {
-					if ((!callback || head.cb == callback) && head.ct == context) {
-						if (!prev) {
-							head = cbs.n = head.n;
-						}
-						else
-							head = prev.n = head.n;
-					} else {
-						prev = head;
-						head = head.n;
+			while(head) {
+				if ((!callback || head.cb == callback) && head.ct == context) {
+					if (!prev) {
+						head = cbs.n = head.n;
 					}
+					else
+						head = prev.n = head.n;
+				} else {
+					prev = head;
+					head = head.n;
 				}
+			}
 		}
 		return this;
 	}
